@@ -18,7 +18,6 @@ package android.pacstats;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,72 +30,67 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.pacstats.R;
 
 public class PACStats extends PreferenceActivity
         implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener,
         Preference.OnPreferenceChangeListener {
 
     private static final String VIEW_STATS = "pref_view_stats";
+    
     private static final String PREF_UNINSTALL = "pref_uninstall_pacstats";
-
+    
     protected static final String PAC_OPT_IN = "pref_pac_opt_in";
-    protected static final String PAC_FIRST_BOOT = "pref_pac_first_boot";
     protected static final String PAC_LAST_CHECKED = "pref_pac_checked_in";
-    protected static final String PAC_ALARM_SET = "pref_pac_alarm_set";
 
     private CheckBoxPreference mEnableReporting;
     private Preference mViewStats;
     private Preference btnUninstall;
+    
     private Dialog mOkDialog;
     private boolean mOkClicked;
+    
     private SharedPreferences mPrefs;
 
+    public static SharedPreferences getPreferences(Context context) {
+        return context.getSharedPreferences(Utilities.SETTINGS_PREF_NAME, 0);
+    }
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getPreferenceManager() != null) {
-            addPreferencesFromResource(R.xml.pac_stats);
-            PreferenceScreen prefSet = getPreferenceScreen();
+        
+    	addPreferencesFromResource(R.xml.pac_stats);
+    	
+    	mPrefs = getPreferences(this);
+        
+    	PreferenceScreen prefSet = getPreferenceScreen();
+        mEnableReporting = (CheckBoxPreference) prefSet.findPreference(PAC_OPT_IN);
+        mViewStats = (Preference) prefSet.findPreference(VIEW_STATS);
+        btnUninstall = prefSet.findPreference(PREF_UNINSTALL);
+        
+        // show Uninstall button if PACStats is installed as User App
+        try {
+            PackageManager pm = getPackageManager();
+            ApplicationInfo appInfo = pm.getApplicationInfo(getPackageName(), 0);
             
-            mPrefs = this.getSharedPreferences(Utilities.SETTINGS_PREF_NAME, 0);
-            mEnableReporting = (CheckBoxPreference) prefSet.findPreference(PAC_OPT_IN);
-            mViewStats = (Preference) prefSet.findPreference(VIEW_STATS);
-            btnUninstall = prefSet.findPreference(PREF_UNINSTALL);
+            //Log.d(Utilities.TAG, "App is installed in: " + appInfo.sourceDir);
+            //Log.d(Utilities.TAG, "App is system: " + (appInfo.flags & ApplicationInfo.FLAG_SYSTEM));
             
-            boolean firstBoot = mPrefs.getBoolean(PAC_FIRST_BOOT, true);
-            
-            if (mEnableReporting.isChecked() && firstBoot) {
-                mPrefs.edit().putBoolean(PAC_FIRST_BOOT, false).apply();
-                ReportingServiceManager.launchService(this);
-            }
-            
-            try {
-                PackageManager pm = getPackageManager();
-                ApplicationInfo appInfo = pm.getApplicationInfo(getPackageName(), 0);
-                
-                //Log.d(Utilities.TAG, "App is installed in: " + appInfo.sourceDir);
-                //Log.d(Utilities.TAG, "App is system: " + (appInfo.flags & ApplicationInfo.FLAG_SYSTEM));
-                
-                if ((appInfo.sourceDir.startsWith("/data/app/")) && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                	// it is a User app
-                	btnUninstall.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-						@Override
-						public boolean onPreferenceClick(Preference pref) {
-							uninstallSelf();
-							return true;
-						}
-					});
-                } else {
-                	prefSet.removePreference(btnUninstall);
-                }
-                
-            } catch (Exception e) {
+            if ((appInfo.sourceDir.startsWith("/data/app/")) && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+            	// it is a User app
+            	btnUninstall.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+					@Override
+					public boolean onPreferenceClick(Preference pref) {
+						uninstallSelf();
+						return true;
+					}
+				});
+            } else {
             	prefSet.removePreference(btnUninstall);
             }
             
-            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            nm.cancel(1);
+        } catch (Exception e) {
+        	prefSet.removePreference(btnUninstall);
         }
     }
 
@@ -108,14 +102,14 @@ public class PACStats extends PreferenceActivity
 				mOkClicked = false;
 				if (mOkDialog != null) {
 					mOkDialog.dismiss();
-					mOkDialog = null;
 				}
 				mOkDialog = new AlertDialog.Builder(this)
 						.setMessage(this.getResources().getString(R.string.pac_stats_warning))
 						.setTitle(R.string.pac_stats_warning_title)
 						.setPositiveButton(android.R.string.yes, this)
 						.setNeutralButton(getString(R.string.pac_learn_more), this)
-						.setNegativeButton(android.R.string.no, this).show();
+						.setNegativeButton(android.R.string.no, this)
+						.show();
 				mOkDialog.setOnDismissListener(this);
 			} else {
 				// Disable reporting

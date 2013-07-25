@@ -1,4 +1,5 @@
 /*
+ /*
  * Copyright (C) 2012 The CyanogenMod Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +20,7 @@ package android.pacstats;
 import java.math.BigInteger;
 import java.net.NetworkInterface;
 import java.security.MessageDigest;
+import java.util.Locale;
 
 import android.content.Context;
 import android.os.SystemProperties;
@@ -28,6 +30,9 @@ public class Utilities {
 	public static final String SETTINGS_PREF_NAME = "PACStats";
 	public static final String TAG = "PACStats";
 
+	// For the Unique ID, I still use the IMEI or WiFi MAC address
+	// CyanogenMod switched to use the Settings.Secure.ANDROID_ID
+	// This is because the ANDROID_ID could change on hard reset, while IMEI remains equal
 	public static String getUniqueID(Context ctx) {
 		TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
 
@@ -51,7 +56,7 @@ public class Utilities {
 		if (returnUrl.isEmpty()) {
 			return null;
 		}
-		
+
 		// if the last char of the link is not /, add it
 		if (!returnUrl.substring(returnUrl.length() - 1).equals("/")) {
 			returnUrl += "/";
@@ -102,7 +107,7 @@ public class Utilities {
 	public static String getRomVersion() {
 		return SystemProperties.get("ro.pacstats.version");
 	}
-	
+
 	public static long getTimeFrame() {
 		String tFrameStr = SystemProperties.get("ro.pacstats.tframe", "7");
 		return Long.valueOf(tFrameStr);
@@ -111,7 +116,7 @@ public class Utilities {
 	public static String digest(String input) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
-			return new BigInteger(1, md.digest(input.getBytes())).toString(16).toUpperCase();
+			return new BigInteger(1, md.digest(input.getBytes())).toString(16).toUpperCase(Locale.US);
 		} catch (Exception e) {
 			return null;
 		}
