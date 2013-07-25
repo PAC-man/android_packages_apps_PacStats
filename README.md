@@ -13,8 +13,8 @@ The submitted data contains:
 * **Country**: from the Android API, getNetworkCountryIso
 * **Carrier**: from the Android API, getNetworkOperatorName
 * **Carier ID**: from the Android API, getNetworkOperator
-* **ROM Name**: from the newly added property "ro.romstats.name"
-* **ROM version**: from the newly added property "ro.romstats.version"
+* **ROM Name**: from the newly added property "ro.pacstats.name"
+* **ROM version**: from the newly added property "ro.pacstats.version"
 
 in addition to this data, the database has an extra 2 columns:
 * **First registration date**: the first time the device registered on the server
