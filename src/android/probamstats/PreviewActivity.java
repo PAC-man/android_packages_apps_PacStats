@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.pacstats;
+package android.probamstats;
 
 import android.content.Context;
 import android.os.Bundle;

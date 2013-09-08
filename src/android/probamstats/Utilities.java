@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package android.pacstats;
+package android.probamstats;
 
 import java.math.BigInteger;
 import java.net.NetworkInterface;
@@ -27,8 +27,8 @@ import android.os.SystemProperties;
 import android.telephony.TelephonyManager;
 
 public class Utilities {
-	public static final String SETTINGS_PREF_NAME = "PACStats";
-	public static final String TAG = "PACStats";
+	public static final String SETTINGS_PREF_NAME = "ProBamStats";
+	public static final String TAG = "ProBamStats";
 
 	// For the Unique ID, I still use the IMEI or WiFi MAC address
 	// CyanogenMod switched to use the Settings.Secure.ANDROID_ID
@@ -51,7 +51,7 @@ public class Utilities {
 	}
 
 	public static String getStatsUrl() {
-		String returnUrl = SystemProperties.get("ro.pacstats.url");
+		String returnUrl = SystemProperties.get("ro.probamstats.url");
 
 		if (returnUrl.isEmpty()) {
 			return null;
@@ -101,15 +101,15 @@ public class Utilities {
 	}
 
 	public static String getRomName() {
-		return SystemProperties.get("ro.pacstats.name");
+		return SystemProperties.get("ro.probamstats.name");
 	}
 
 	public static String getRomVersion() {
-		return SystemProperties.get("ro.pacstats.version");
+		return SystemProperties.get("ro.probamstats.version");
 	}
 
 	public static long getTimeFrame() {
-		String tFrameStr = SystemProperties.get("ro.pacstats.tframe", "7");
+		String tFrameStr = SystemProperties.get("ro.probamstats.tframe", "7");
 		return Long.valueOf(tFrameStr);
 	}
 
