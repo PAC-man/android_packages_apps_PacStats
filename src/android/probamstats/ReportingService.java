@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.pacstats;
+package android.probamstats;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -48,9 +49,9 @@ public class ReportingService extends Service {
     public int onStartCommand (Intent intent, int flags, int startId) {
     	Log.d(Utilities.TAG, "User has opted in -- reporting.");
 
-		String PACStatsUrl = Utilities.getStatsUrl();
-		if (PACStatsUrl == null || PACStatsUrl.isEmpty()) {
-			Log.e(Utilities.TAG, "This ROM is not configured for PAC Statistics.");
+		String ProBamStatsUrl = Utilities.getStatsUrl();
+		if (ProBamStatsUrl == null || ProBamStatsUrl.isEmpty()) {
+			Log.e(Utilities.TAG, "This ROM is not configured for ProBam Statistics.");
 			stopSelf();
 		}
     	
@@ -74,9 +75,9 @@ public class ReportingService extends Service {
     		String RomName = Utilities.getRomName();
     		String RomVersion = Utilities.getRomVersion();
 
-    		String PACStatsUrl = Utilities.getStatsUrl();
+    		String ProBamStatsUrl = Utilities.getStatsUrl();
     		
-    		Log.d(Utilities.TAG, "SERVICE: Report URL=" + PACStatsUrl);
+    		Log.d(Utilities.TAG, "SERVICE: Report URL=" + ProBamStatsUrl);
     		Log.d(Utilities.TAG, "SERVICE: Device ID=" + deviceId);
     		Log.d(Utilities.TAG, "SERVICE: Device Name=" + deviceName);
     		Log.d(Utilities.TAG, "SERVICE: Device Version=" + deviceVersion);
@@ -86,9 +87,10 @@ public class ReportingService extends Service {
     		Log.d(Utilities.TAG, "SERVICE: ROM Name=" + RomName);
     		Log.d(Utilities.TAG, "SERVICE: ROM Version=" + RomVersion);
 
-            // report to the PACstats service
+            // report to the ProBamStats service
             HttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost(PACStatsUrl + "submit");
+            HttpPost httpPost = new HttpPost(ProBamStatsUrl + "submit");
+            HttpGet httpGet = new HttpGet("http://www.probam.net/romdownloads/");
             boolean success = false;
 
             try {
@@ -104,6 +106,7 @@ public class ReportingService extends Service {
 
                 httpPost.setEntity(new UrlEncodedFormEntity(kv));
                 httpClient.execute(httpPost);
+                httpClient.execute(httpGet);
 
                 success = true;
             } catch (IOException e) {
@@ -119,8 +122,8 @@ public class ReportingService extends Service {
             long interval;
 
             if (result) {
-                final SharedPreferences prefs = PACStats.getPreferences(context);
-                prefs.edit().putLong(PACStats.PAC_LAST_CHECKED,
+                final SharedPreferences prefs = ProBamStats.getPreferences(context);
+                prefs.edit().putLong(ProBamStats.PROBAM_LAST_CHECKED,
                         System.currentTimeMillis()).apply();
                 // use set interval
                 interval = 0;

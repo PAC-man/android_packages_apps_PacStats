@@ -16,11 +16,11 @@
 
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="@string/pac_stats_title"
+    android:title="@string/probam_stats_title"
     xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
 
     <CheckBoxPreference
-        android:key="pref_pac_opt_in"
+        android:key="pref_probam_opt_in"
         android:defaultValue="true"
         android:title="@string/enable_reporting_title" />
     
@@ -28,8 +28,8 @@
         android:title="@string/preview_data_title">
         <intent
              android:action="android.intent.action.VIEW"
-             android:targetPackage="android.pacstats"
-             android:targetClass="android.pacstats.PreviewActivity" />
+             android:targetPackage="android.probamstats"
+             android:targetClass="android.probamstats.PreviewActivity" />
     </PreferenceScreen>
 
     <Preference
@@ -37,7 +37,7 @@
         android:title="@string/view_stats_title" />
     
     <Preference
-        android:key="pref_uninstall_pacstats"
+        android:key="pref_uninstall_probamstats"
         android:title="@string/pref_uninstall" />    
 
 </PreferenceScreen>

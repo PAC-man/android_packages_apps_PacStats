@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.pacstats;
+package android.probamstats;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,16 +31,16 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 
-public class PACStats extends PreferenceActivity
+public class ProBamStats extends PreferenceActivity
         implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener,
         Preference.OnPreferenceChangeListener {
 
     private static final String VIEW_STATS = "pref_view_stats";
     
-    private static final String PREF_UNINSTALL = "pref_uninstall_pacstats";
+    private static final String PREF_UNINSTALL = "pref_uninstall_probamstats";
     
-    protected static final String PAC_OPT_IN = "pref_pac_opt_in";
-    protected static final String PAC_LAST_CHECKED = "pref_pac_checked_in";
+    protected static final String PROBAM_OPT_IN = "pref_probam_opt_in";
+    protected static final String PROBAM_LAST_CHECKED = "pref_probam_checked_in";
 
     private CheckBoxPreference mEnableReporting;
     private Preference mViewStats;
@@ -59,16 +59,16 @@ public class PACStats extends PreferenceActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-    	addPreferencesFromResource(R.xml.pac_stats);
+    	addPreferencesFromResource(R.xml.probam_stats);
     	
     	mPrefs = getPreferences(this);
         
     	PreferenceScreen prefSet = getPreferenceScreen();
-        mEnableReporting = (CheckBoxPreference) prefSet.findPreference(PAC_OPT_IN);
+        mEnableReporting = (CheckBoxPreference) prefSet.findPreference(PROBAM_OPT_IN);
         mViewStats = (Preference) prefSet.findPreference(VIEW_STATS);
         btnUninstall = prefSet.findPreference(PREF_UNINSTALL);
         
-        // show Uninstall button if PACStats is installed as User App
+        // show Uninstall button if ProBamStats is installed as User App
         try {
             PackageManager pm = getPackageManager();
             ApplicationInfo appInfo = pm.getApplicationInfo(getPackageName(), 0);
@@ -104,16 +104,16 @@ public class PACStats extends PreferenceActivity
 					mOkDialog.dismiss();
 				}
 				mOkDialog = new AlertDialog.Builder(this)
-						.setMessage(this.getResources().getString(R.string.pac_stats_warning))
-						.setTitle(R.string.pac_stats_warning_title)
+						.setMessage(this.getResources().getString(R.string.probam_stats_warning))
+						.setTitle(R.string.probam_stats_warning_title)
 						.setPositiveButton(android.R.string.yes, this)
-						.setNeutralButton(getString(R.string.pac_learn_more), this)
+						.setNeutralButton(getString(R.string.probam_learn_more), this)
 						.setNegativeButton(android.R.string.no, this)
 						.show();
 				mOkDialog.setOnDismissListener(this);
 			} else {
 				// Disable reporting
-				mPrefs.edit().putBoolean(PAC_OPT_IN, false).apply();
+				mPrefs.edit().putBoolean(PROBAM_OPT_IN, false).apply();
 			}
 		} else if (preference == mViewStats) {
 			// Display the stats page
@@ -142,7 +142,7 @@ public class PACStats extends PreferenceActivity
     public void onClick(DialogInterface dialog, int which) {
         if (which == DialogInterface.BUTTON_POSITIVE) {
             mOkClicked = true;
-            mPrefs.edit().putBoolean(PAC_OPT_IN, true).apply();
+            mPrefs.edit().putBoolean(PROBAM_OPT_IN, true).apply();
             ReportingServiceManager.launchService(this);
         } else if (which == DialogInterface.BUTTON_NEGATIVE){
             mEnableReporting.setChecked(false);

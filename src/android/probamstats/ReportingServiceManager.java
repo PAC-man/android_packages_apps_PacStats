@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package android.pacstats;
+package android.probamstats;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -45,8 +45,8 @@ public class ReportingServiceManager extends BroadcastReceiver {
 	}
 
 	public static void setAlarm(Context context, long millisFromNow) {
-		SharedPreferences prefs = PACStats.getPreferences(context);
-		boolean optedIn = prefs.getBoolean(PACStats.PAC_OPT_IN, true);
+		SharedPreferences prefs = ProBamStats.getPreferences(context);
+		boolean optedIn = prefs.getBoolean(ProBamStats.PROBAM_OPT_IN, true);
 		if (!optedIn) {
 			return;
 		}
@@ -54,13 +54,13 @@ public class ReportingServiceManager extends BroadcastReceiver {
 		long UPDATE_INTERVAL = Long.valueOf(Utilities.getTimeFrame()) * MILLIS_PER_DAY;
 
 		if (millisFromNow <= 0) {
-			long lastSynced = prefs.getLong(PACStats.PAC_LAST_CHECKED, 0);
+			long lastSynced = prefs.getLong(ProBamStats.PROBAM_LAST_CHECKED, 0);
 			if (lastSynced == 0) {
 				// never synced, so let's fake out that the last sync was just now.
 				// this will allow the user tFrame time to opt out before it will start
-				// sending up PAC stats.
+				// sending up ProBam stats.
 				lastSynced = System.currentTimeMillis();
-				prefs.edit().putLong(PACStats.PAC_LAST_CHECKED, lastSynced).apply();
+				prefs.edit().putLong(ProBamStats.PROBAM_LAST_CHECKED, lastSynced).apply();
 				Log.d(Utilities.TAG, "Set alarm for first sync.");
 			}
 			millisFromNow = (lastSynced + UPDATE_INTERVAL) - System.currentTimeMillis();
@@ -84,12 +84,12 @@ public class ReportingServiceManager extends BroadcastReceiver {
 			return;
 		}
 
-		SharedPreferences prefs = PACStats.getPreferences(context);
-		boolean optedIn = prefs.getBoolean(PACStats.PAC_OPT_IN, true);
+		SharedPreferences prefs = ProBamStats.getPreferences(context);
+		boolean optedIn = prefs.getBoolean(ProBamStats.PROBAM_OPT_IN, true);
 		if (!optedIn) {
 			return;
 		}
-		long lastSynced = prefs.getLong(PACStats.PAC_LAST_CHECKED, 0);
+		long lastSynced = prefs.getLong(ProBamStats.PROBAM_LAST_CHECKED, 0);
 		if (lastSynced == 0) {
 			setAlarm(context, 0);
 			return;
